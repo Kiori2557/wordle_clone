@@ -49,7 +49,7 @@ function Board() {
     };
   }, [keyDownHandler]);
   return (
-    <div className="flex flex-col justify-center place-self-center gap-1">
+    <div className="flex flex-col justify-center place-self-center gap-1 ">
       {[...Array(chance)].map((_, i) => {
         return <Row key={i} guess={guesses[i]} />;
       })}
