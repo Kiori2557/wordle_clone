@@ -4,11 +4,12 @@ import Tile from "./Tile";
 
 type RowProps = {
   guess?: string;
+  showResult: boolean;
 };
 
-function Row({ guess }: RowProps) {
+function Row({ guess, showResult }: RowProps) {
   const letter = useStore((state) => state.answerLength);
-  const result = useCheckAnswer(guess || "null");
+  const result = useCheckAnswer(guess || "");
   const classContent = `flex gap-1`;
 
   return (
@@ -18,7 +19,7 @@ function Row({ guess }: RowProps) {
           <Tile
             key={i}
             letter={guess && guess[i]}
-            result={result ? result[i] : ""}
+            result={showResult ? result[i] : "null"}
           />
         );
       })}

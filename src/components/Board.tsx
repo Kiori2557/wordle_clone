@@ -1,46 +1,38 @@
 import useStore from "../store/store";
 import Row from "./Row";
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 function Board() {
   const chance = useStore((state) => state.chance);
   const allGuesses = useStore((state) => state.allGuesses);
-  const [guesses, setGuesses] = useState<string[]>([""]);
+  const deleteLetter = useStore((state) => state.deleteLastLetter);
+  const addLetter = useStore((state) => state.updateCurrentGuess);
   const answerLength = useStore((state) => state.answerLength);
-  const answer = useStore((state) => state.answer);
   const { addGuess } = useStore.getState();
+  const currentIndex = allGuesses?.length - 1;
+
   const keyDownHandler = useCallback(
     (e: KeyboardEvent) => {
       if (e.repeat) return;
-      const currentGuess = guesses[guesses?.length - 1];
-      if (e.key === "Enter") {
-        if (currentGuess === answer) {
-          console.log("u win");
-        } else {
-          addGuess(currentGuess);
-          setGuesses([...guesses, ""]);
-        }
-        console.log(allGuesses);
-        return;
+      const currentGuess = allGuesses[currentIndex];
+      if (e.key === "Backspace") {
+        //Delete when backspace is pressed
+        deleteLetter(currentIndex);
+      } else if (
+        //Add to guess when any key from A-Z is pressed
+        currentGuess.length < answerLength &&
+        /^[a-zA-Z]$/.test(e.key)
+      ) {
+        addLetter(currentIndex, e.key);
+      } else if (e.key === "Enter" && currentGuess.length === 5) {
+        // Create a new guess and save the current guess as previous guess
+        addGuess("");
+      } else {
+        return [...allGuesses, currentGuess];
       }
-
-      setGuesses((guesses: string[]) => {
-        const lastGuess = guesses[guesses.length - 1];
-        if (e.key === "Backspace") {
-          console.log("delete");
-          return [...allGuesses, lastGuess.slice(0, lastGuess.length - 1)];
-        } else if (
-          lastGuess.length < answerLength &&
-          /^[a-zA-Z]$/.test(e.key)
-        ) {
-          const updated = lastGuess + e.key;
-          return [...allGuesses, updated];
-        } else {
-          return [...allGuesses, lastGuess];
-        }
-      });
     },
-    [answerLength, answer, addGuess, guesses, allGuesses]
+    [answerLength, addLetter, currentIndex, deleteLetter, addGuess, allGuesses]
   );
+
   useEffect(() => {
     window.addEventListener("keydown", keyDownHandler);
     console.log("useEffect run");
@@ -48,10 +40,17 @@ function Board() {
       window.removeEventListener("keydown", keyDownHandler);
     };
   }, [keyDownHandler]);
+
   return (
     <div className="flex flex-col justify-center place-self-center gap-1 ">
       {[...Array(chance)].map((_, i) => {
-        return <Row key={i} guess={guesses[i]} />;
+        return (
+          <Row
+            key={i}
+            guess={allGuesses[i]}
+            showResult={i < currentIndex ? true : false}
+          />
+        );
       })}
     </div>
   );

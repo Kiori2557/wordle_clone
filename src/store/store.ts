@@ -2,20 +2,32 @@ import { create } from "zustand";
 
 type StoreType = {
     answer: string,
+    gotWinner:boolean,
     answerLength: number,
     chance:number,
     allGuesses: string[],
     addGuess:(guess:string) => void,
-    resetStore:() => void,
+    deleteLastLetter:(currentIndex:number) => void,
+    updateCurrentGuess:(currentIndex:number,letter:string) => void,
+    resetStore: () => void,
+    setGotWinner:()=>void
 }
 
 const useStore = create<StoreType>((set) => ({
     answer: 'hello',
+    gotWinner: false,
     answerLength: 5,
     chance:6,
-    allGuesses: [],
+    allGuesses: [""],
     addGuess: (guess: string) => set((state: StoreType) => ({ allGuesses: [...state.allGuesses, guess] })),
-    resetStore: ()=>set({allGuesses:[]})
+    deleteLastLetter: (currentIndex:number) => set((state: StoreType) => ({
+         allGuesses: state.allGuesses.map((guess,i)=> (i === currentIndex) ? guess.slice(0, guess.length - 1): guess)
+    })),
+    updateCurrentGuess:  (currentIndex:number,letter:string) => set((state: StoreType) => ({
+         allGuesses: state.allGuesses.map((guess,i)=> (i === currentIndex) ? guess+letter: guess)
+    })),
+    resetStore: () => set({ allGuesses: [], gotWinner:false }),
+    setGotWinner:()=>set(() => ({ gotWinner: true}))
 }))
 
 export default useStore
