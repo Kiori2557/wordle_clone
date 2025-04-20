@@ -1,15 +1,14 @@
-import useCheckAnswer from "../hooks/useCheckAnswer";
 import useStore from "../store/store";
 import Tile from "./Tile";
 
 type RowProps = {
   guess?: string;
   showResult: boolean;
+  result?: string[];
 };
 
-function Row({ guess, showResult }: RowProps) {
+function Row({ guess, showResult, result }: RowProps) {
   const letter = useStore((state) => state.answerLength);
-  const result = useCheckAnswer(guess || "");
   const classContent = `flex gap-1`;
 
   return (
@@ -19,7 +18,7 @@ function Row({ guess, showResult }: RowProps) {
           <Tile
             key={i}
             letter={guess && guess[i]}
-            result={showResult ? result[i] : "null"}
+            result={showResult && result ? result[i] : "null"}
           />
         );
       })}

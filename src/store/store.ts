@@ -6,9 +6,11 @@ type StoreType = {
     answerLength: number,
     chance:number,
     allGuesses: string[],
+    results:string[][],
     addGuess:(guess:string) => void,
     deleteLastLetter:(currentIndex:number) => void,
-    updateCurrentGuess:(currentIndex:number,letter:string) => void,
+    updateCurrentGuess: (currentIndex: number, letter: string) => void,
+    addResult:(result:string[])=>void
     resetStore: () => void,
     setGotWinner:()=>void
 }
@@ -19,6 +21,7 @@ const useStore = create<StoreType>((set) => ({
     answerLength: 5,
     chance:6,
     allGuesses: [""],
+    results : [],
     addGuess: (guess: string) => set((state: StoreType) => ({ allGuesses: [...state.allGuesses, guess] })),
     deleteLastLetter: (currentIndex:number) => set((state: StoreType) => ({
          allGuesses: state.allGuesses.map((guess,i)=> (i === currentIndex) ? guess.slice(0, guess.length - 1): guess)
@@ -26,6 +29,7 @@ const useStore = create<StoreType>((set) => ({
     updateCurrentGuess:  (currentIndex:number,letter:string) => set((state: StoreType) => ({
          allGuesses: state.allGuesses.map((guess,i)=> (i === currentIndex) ? guess+letter: guess)
     })),
+    addResult: (result: string[]) => set((state: StoreType) => ({ results: [...state.results,result] })),
     resetStore: () => set({ allGuesses: [], gotWinner:false }),
     setGotWinner:()=>set(() => ({ gotWinner: true}))
 }))
