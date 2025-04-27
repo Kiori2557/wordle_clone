@@ -18,7 +18,7 @@ function Row({ guess, showResult, result }: RowProps) {
           <Tile
             key={i}
             letter={guess && guess[i]}
-            result={showResult && result ? result[i] : "null"}
+            result={showResult && result ? result[i] : ""}
           />
         );
       })}

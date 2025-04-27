@@ -11,8 +11,15 @@ function Tile({ letter, result }: TileProps) {
   } else if (result === "INCORRECT") {
     tileColor = "bg-gray-200";
   }
-  const classContent = `${tileColor} w-20 h-20 border-2 border-black rounded-sm inline-flex items-center justify-center text-4xl align-middle uppercase leading-none font-bold`;
+  let animate = "";
+  animate = result ? "flip" : "";
+  const tileClass = `tile ${tileColor} ${animate}  w-20 h-20 border-2 border-black rounded-sm inline-flex items-center justify-center text-4xl align-middle uppercase leading-none font-bold`;
+  const letterClass = `letter ${animate}`;
 
-  return <div className={classContent}>{letter}</div>;
+  return (
+    <div className={tileClass}>
+      <span className={letterClass}>{letter}</span>
+    </div>
+  );
 }
 export default Tile;

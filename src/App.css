@@ -117,3 +117,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+.tile {
+  transition: transform 1s, background-color 1.75s;
+}
+
+.flip {
+  transform: rotateX(180deg);
+}
+
+.letter {
+  transition: transform 1s;
+}
