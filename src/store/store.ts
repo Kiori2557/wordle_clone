@@ -19,7 +19,7 @@ type StoreType = {
 }
 
 const useStore = create<StoreType>((set) => ({
-    answer: '',
+    answer: 'dread',
     gotWinner: false,
     answerLength: 5,
     chance:6,
