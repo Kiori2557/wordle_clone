@@ -27,7 +27,8 @@ function App() {
       setWordList(res.data);
       return res.data;
     },
-    enabled: !!wordList,
+    enabled: !wordList.length,
+    gcTime: 1000 * 60 * 60,
   });
   const content =
     randomWordLoading && wordListLoading ? (

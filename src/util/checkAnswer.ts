@@ -29,7 +29,6 @@ const checkAnswer = (guess:string,answer:string,) => {
       result[i] = "INCORRECT";
     }
   });
-
   // Check if the guess is completely correct
   const isCorrect = result.every((cur) => cur === "CORRECT_INDEX");
 

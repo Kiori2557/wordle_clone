@@ -5,11 +5,12 @@ type RowProps = {
   guess?: string;
   showResult: boolean;
   result?: string[];
+  shake?: boolean;
 };
 
-function Row({ guess, showResult, result }: RowProps) {
+function Row({ guess, showResult, result, shake }: RowProps) {
   const letter = useStore((state) => state.answerLength);
-  const classContent = `flex gap-1`;
+  const classContent = `flex gap-1 ${shake ? "animate-shake" : ""}`;
   return (
     <div className={classContent}>
       {[...Array(letter)].map((_, i) => {

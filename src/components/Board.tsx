@@ -1,7 +1,7 @@
 import checkAnswer from "../util/checkAnswer";
 import useStore from "../store/store";
 import Row from "./Row";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { toast } from "sonner";
 function Board() {
   const chance = useStore((state) => state.chance);
@@ -15,13 +15,14 @@ function Board() {
   const deleteLetter = useStore((state) => state.deleteLastLetter);
   const addLetter = useStore((state) => state.updateCurrentGuess);
   const addGuess = useStore((state) => state.addGuess);
-
   const currentIndex = allGuesses?.length - 1;
+  const [shakeRow, setShakeRow] = useState(false);
 
   const keyDownHandler = useCallback(
     (e: KeyboardEvent) => {
       if (e.repeat) return;
       const currentGuess = allGuesses[currentIndex];
+
       if (e.key === "Backspace") {
         //Delete when backspace is pressed
         deleteLetter(currentIndex);
@@ -30,12 +31,15 @@ function Board() {
         currentGuess?.length < answerLength &&
         /^[a-zA-Z]$/.test(e.key)
       ) {
-        addLetter(currentIndex, e.key);
+        addLetter(currentIndex, e.key.toLowerCase());
       } else if (e.key === "Enter" && currentGuess.length === 5) {
         // Create a new guess and save the current guess as previous guess
         if (!wordList.includes(currentGuess)) {
-          // toast(`${currentGuess} is not in word list`);
           toast.warning(`${currentGuess.toUpperCase()} is not in word list`);
+          setShakeRow(true);
+          setTimeout(() => {
+            setShakeRow(false);
+          }, 500);
           return;
         }
         const { result, isCorrect } = checkAnswer(currentGuess, answer);
@@ -79,6 +83,7 @@ function Board() {
               guess={allGuesses[i]}
               showResult={i < currentIndex ? true : false}
               result={results[i]}
+              shake={i === currentIndex && shakeRow}
             />
           );
         })}
