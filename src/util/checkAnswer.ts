@@ -15,7 +15,6 @@ const checkAnswer = (guess:string,answer:string,) => {
   answerArr.forEach((_, i) => {
     if (answerArr.includes(guessArr[i]) && guessArr[i] !== "checked") {
       const index = answerArr.findIndex((e) => e == guessArr[i])
-      console.log(index)
       answerArr[index] = "checked";
       guessArr[i] = "checked";
       result[i] = "CORRECT_LETTER";

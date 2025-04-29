@@ -1,5 +1,11 @@
 import { create } from "zustand";
 
+export type keyRecordType = {
+    CORRECT_INDEX: string[],
+    CORRECT_LETTER: string[],
+    INCORRECT:string[]
+}
+
 type StoreType = {
     answer: string,
     gotWinner:boolean,
@@ -8,6 +14,7 @@ type StoreType = {
     allGuesses: string[],
     results: string[][],
     wordList: string[],
+    keyRecord: keyRecordType
     setWordList:(words:string[])=>void,
     setAnswer:(answer:string)=>void,
     addGuess:(guess:string) => void,
@@ -15,7 +22,8 @@ type StoreType = {
     updateCurrentGuess: (currentIndex: number, letter: string) => void,
     addResult:(result:string[])=>void
     resetStore: () => void,
-    setGotWinner:()=>void
+    setGotWinner: () => void,
+    updateKeyRecord:(guess:string[],result:string[])=>void
 }
 
 const useStore = create<StoreType>((set) => ({
@@ -26,6 +34,11 @@ const useStore = create<StoreType>((set) => ({
     allGuesses: [""],
     wordList:[],
     results: [],
+    keyRecord: {
+        CORRECT_INDEX: [],
+        CORRECT_LETTER: [],
+        INCORRECT: []
+    },
     setWordList:(words:string[])=>set(()=>({wordList:[...words]})),
     setAnswer:(answer:string)=>set(()=>({answer:answer})),
     addGuess: (guess: string) => set((state: StoreType) => ({ allGuesses: [...state.allGuesses, guess] })),
@@ -37,7 +50,33 @@ const useStore = create<StoreType>((set) => ({
     })),
     addResult: (result: string[]) => set((state: StoreType) => ({ results: [...state.results,result] })),
     resetStore: () => set({ allGuesses: [""], gotWinner:false,results:[], answer:''}),
-    setGotWinner:()=>set(() => ({ gotWinner: true}))
+    setGotWinner: () => set(() => ({ gotWinner: true })),
+    updateKeyRecord: (guess: string[], result: string[]) => set((state: StoreType) => {
+        const correctIndex:string[] = [...state.keyRecord.CORRECT_INDEX];
+        let correctLetter:string[] = [...state.keyRecord.CORRECT_LETTER];
+        const incorrect: string[] = [...state.keyRecord.INCORRECT];
+        result.map((r, index) => {
+            if (r === "CORRECT_INDEX" && !correctIndex.includes(guess[index])) {
+                if (correctLetter.includes(guess[index])) {
+                    correctLetter = correctLetter.filter((letter)=> letter != guess[index])
+                }
+                correctIndex.push(guess[index])
+            }
+            if (r === "CORRECT_LETTER" && !correctLetter.includes(guess[index]) && !correctIndex.includes(guess[index])) {
+                correctLetter.push(guess[index])
+            }
+            if (r === "INCORRECT" && !incorrect.includes(guess[index])) {
+                incorrect.push(guess[index])
+            }
+        })
+        return ({
+            keyRecord: {
+                CORRECT_INDEX: correctIndex,
+                CORRECT_LETTER: correctLetter,
+                INCORRECT: incorrect,
+            }
+        }
+    )}),
 }))
 
 export default useStore

@@ -1,5 +1,6 @@
 import checkAnswer from "../util/checkAnswer";
 import useStore from "../store/store";
+import Keyboard from "./Keyboard";
 import Row from "./Row";
 import { useEffect, useCallback, useState } from "react";
 import { toast } from "sonner";
@@ -15,24 +16,29 @@ function Board() {
   const deleteLetter = useStore((state) => state.deleteLastLetter);
   const addLetter = useStore((state) => state.updateCurrentGuess);
   const addGuess = useStore((state) => state.addGuess);
+  const keyRecord = useStore((state) => state.keyRecord);
+  const updateKeyRecord = useStore((state) => state.updateKeyRecord);
   const currentIndex = allGuesses?.length - 1;
   const [shakeRow, setShakeRow] = useState(false);
 
   const keyDownHandler = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.repeat) return;
+    (key: string | KeyboardEvent) => {
+      if (key instanceof KeyboardEvent) {
+        key = key.key;
+      }
+
       const currentGuess = allGuesses[currentIndex];
 
-      if (e.key === "Backspace") {
+      if (key === "Backspace") {
         //Delete when backspace is pressed
         deleteLetter(currentIndex);
       } else if (
         //Add to guess when any key from A-Z is pressed
         currentGuess?.length < answerLength &&
-        /^[a-zA-Z]$/.test(e.key)
+        /^[a-zA-Z]$/.test(key)
       ) {
-        addLetter(currentIndex, e.key.toLowerCase());
-      } else if (e.key === "Enter" && currentGuess.length === 5) {
+        addLetter(currentIndex, key.toLowerCase());
+      } else if (key === "Enter" && currentGuess.length === 5) {
         // Create a new guess and save the current guess as previous guess
         if (!wordList.includes(currentGuess)) {
           toast.warning(`${currentGuess.toUpperCase()} is not in word list`);
@@ -48,12 +54,14 @@ function Board() {
           setTimeout(() => setWinner());
         }
         addGuess("");
+        updateKeyRecord(currentGuess.split(""), result);
       } else {
         return [...allGuesses, currentGuess];
       }
     },
     [
       answerLength,
+      updateKeyRecord,
       wordList,
       setWinner,
       addLetter,
@@ -65,11 +73,12 @@ function Board() {
       answer,
     ]
   );
-  console.log(answer);
+  console.log(keyRecord);
   useEffect(() => {
-    window.addEventListener("keydown", keyDownHandler);
+    const handler = (e: KeyboardEvent) => keyDownHandler(e.key);
+    window.addEventListener("keydown", handler);
     return () => {
-      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keydown", handler);
     };
   }, [keyDownHandler]);
 
@@ -88,6 +97,7 @@ function Board() {
           );
         })}
       </div>
+      <Keyboard keyboardHandler={keyDownHandler} keyRecord={keyRecord} />
     </>
   );
 }
