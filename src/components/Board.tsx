@@ -1,81 +1,18 @@
-import checkAnswer from "../util/checkAnswer";
 import useStore from "../store/store";
 import Keyboard from "./Keyboard";
 import Row from "./Row";
-import { useEffect, useCallback, useState } from "react";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import useKeyboardHandler from "@/hooks/useKeyboardHandler";
 function Board() {
   const chance = useStore((state) => state.chance);
   const allGuesses = useStore((state) => state.allGuesses);
-  const answerLength = useStore((state) => state.answerLength);
-  const answer = useStore((state) => state.answer);
-  const wordList = useStore((state) => state.wordList);
   const results = useStore((state) => state.results);
   const keyRecord = useStore((state) => state.keyRecord);
-  const setGameStatus = useStore((state) => state.setStatus);
-  const addResult = useStore((state) => state.addResult);
-  const deleteLetter = useStore((state) => state.deleteLastLetter);
-  const addLetter = useStore((state) => state.updateCurrentGuess);
-  const addGuess = useStore((state) => state.addGuess);
-  const updateKeyRecord = useStore((state) => state.updateKeyRecord);
   const currentIndex = allGuesses?.length - 1;
   const [shakeRow, setShakeRow] = useState(false);
 
-  const keyDownHandler = useCallback(
-    (key: string | KeyboardEvent) => {
-      if (key instanceof KeyboardEvent) {
-        key = key.key;
-      }
+  const keyDownHandler = useKeyboardHandler(setShakeRow);
 
-      const currentGuess = allGuesses[currentIndex];
-
-      if (key === "Backspace") {
-        //Delete when backspace is pressed
-        deleteLetter(currentIndex);
-      } else if (
-        //Add to guess when any key from A-Z is pressed
-        currentGuess?.length < answerLength &&
-        /^[a-zA-Z]$/.test(key)
-      ) {
-        addLetter(currentIndex, key.toLowerCase());
-      } else if (key === "Enter" && currentGuess.length === 5) {
-        // Create a new guess and save the current guess as previous guess
-        if (!wordList.includes(currentGuess)) {
-          toast.warning(`${currentGuess.toUpperCase()} is not in word list`);
-          setShakeRow(true);
-          setTimeout(() => {
-            setShakeRow(false);
-          }, 500);
-          return;
-        }
-        const { result, isCorrect } = checkAnswer(currentGuess, answer);
-        addResult(result);
-        if (isCorrect) {
-          setTimeout(() => setGameStatus("WON"));
-        } else if (!isCorrect && allGuesses.length >= chance) {
-          setTimeout(() => setGameStatus("LOSS"));
-        }
-        addGuess("");
-        updateKeyRecord(currentGuess.split(""), result);
-      } else {
-        return [...allGuesses, currentGuess];
-      }
-    },
-    [
-      answer,
-      chance,
-      wordList,
-      allGuesses,
-      answerLength,
-      currentIndex,
-      addGuess,
-      addLetter,
-      addResult,
-      deleteLetter,
-      setGameStatus,
-      updateKeyRecord,
-    ]
-  );
   useEffect(() => {
     const handler = (e: KeyboardEvent) => keyDownHandler(e.key);
     window.addEventListener("keydown", handler);

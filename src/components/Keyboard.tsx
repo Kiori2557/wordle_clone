@@ -1,7 +1,7 @@
 import { DeleteIcon } from "lucide-react";
 import { keyRecordType } from "@/store/store";
 type KeyboardProps = {
-  keyboardHandler: (key: string | KeyboardEvent) => string[] | undefined;
+  keyboardHandler: (key: string) => string[] | undefined;
   keyRecord: keyRecordType;
 };
 function Keyboard({ keyboardHandler, keyRecord }: KeyboardProps) {
