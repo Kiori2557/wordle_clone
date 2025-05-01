@@ -8,7 +8,7 @@ export type keyRecordType = {
 
 type StoreType = {
     answer: string,
-    gotWinner:boolean,
+    status:string,
     answerLength: number,
     chance:number,
     allGuesses: string[],
@@ -22,13 +22,13 @@ type StoreType = {
     updateCurrentGuess: (currentIndex: number, letter: string) => void,
     addResult:(result:string[])=>void
     resetStore: () => void,
-    setGotWinner: () => void,
+    setStatus: (status:string) => void,
     updateKeyRecord:(guess:string[],result:string[])=>void
 }
 
 const useStore = create<StoreType>((set) => ({
     answer: 'dread',
-    gotWinner: false,
+    status:'',
     answerLength: 5,
     chance:6,
     allGuesses: [""],
@@ -49,8 +49,12 @@ const useStore = create<StoreType>((set) => ({
          allGuesses: state.allGuesses.map((guess,i)=> (i === currentIndex) ? guess+letter: guess)
     })),
     addResult: (result: string[]) => set((state: StoreType) => ({ results: [...state.results,result] })),
-    resetStore: () => set({ allGuesses: [""], gotWinner:false,results:[], answer:''}),
-    setGotWinner: () => set(() => ({ gotWinner: true })),
+    resetStore: () => set({ allGuesses: [""], status:'',results:[], answer:'',keyRecord:{
+        CORRECT_INDEX: [],
+        CORRECT_LETTER: [],
+        INCORRECT: []
+    }}),
+    setStatus: (status:string) => set(() => ({ status: status })),
     updateKeyRecord: (guess: string[], result: string[]) => set((state: StoreType) => {
         const correctIndex:string[] = [...state.keyRecord.CORRECT_INDEX];
         let correctLetter:string[] = [...state.keyRecord.CORRECT_LETTER];

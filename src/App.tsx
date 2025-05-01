@@ -31,13 +31,13 @@ function App() {
     gcTime: 1000 * 60 * 60,
   });
   const content =
-    randomWordLoading && wordListLoading ? (
+    randomWordLoading || wordListLoading ? (
       <div>Loading</div>
     ) : (
-      <>
+      <div className=" min-h-screen flex flex-col">
         <ResultDialog />
         <Board />
-      </>
+      </div>
     );
 
   return content;

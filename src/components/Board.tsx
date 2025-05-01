@@ -10,13 +10,13 @@ function Board() {
   const answerLength = useStore((state) => state.answerLength);
   const answer = useStore((state) => state.answer);
   const wordList = useStore((state) => state.wordList);
-  const setWinner = useStore((state) => state.setGotWinner);
   const results = useStore((state) => state.results);
+  const keyRecord = useStore((state) => state.keyRecord);
+  const setGameStatus = useStore((state) => state.setStatus);
   const addResult = useStore((state) => state.addResult);
   const deleteLetter = useStore((state) => state.deleteLastLetter);
   const addLetter = useStore((state) => state.updateCurrentGuess);
   const addGuess = useStore((state) => state.addGuess);
-  const keyRecord = useStore((state) => state.keyRecord);
   const updateKeyRecord = useStore((state) => state.updateKeyRecord);
   const currentIndex = allGuesses?.length - 1;
   const [shakeRow, setShakeRow] = useState(false);
@@ -51,7 +51,9 @@ function Board() {
         const { result, isCorrect } = checkAnswer(currentGuess, answer);
         addResult(result);
         if (isCorrect) {
-          setTimeout(() => setWinner());
+          setTimeout(() => setGameStatus("WON"));
+        } else if (!isCorrect && allGuesses.length >= chance) {
+          setTimeout(() => setGameStatus("LOSS"));
         }
         addGuess("");
         updateKeyRecord(currentGuess.split(""), result);
@@ -60,20 +62,20 @@ function Board() {
       }
     },
     [
-      answerLength,
-      updateKeyRecord,
-      wordList,
-      setWinner,
-      addLetter,
-      currentIndex,
-      deleteLetter,
-      addGuess,
-      allGuesses,
-      addResult,
       answer,
+      chance,
+      wordList,
+      allGuesses,
+      answerLength,
+      currentIndex,
+      addGuess,
+      addLetter,
+      addResult,
+      deleteLetter,
+      setGameStatus,
+      updateKeyRecord,
     ]
   );
-  console.log(keyRecord);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => keyDownHandler(e.key);
     window.addEventListener("keydown", handler);
@@ -81,10 +83,9 @@ function Board() {
       window.removeEventListener("keydown", handler);
     };
   }, [keyDownHandler]);
-
   return (
     <>
-      <div className="flex flex-col justify-center place-self-center gap-1 ">
+      <div className="flex flex-col justify-center place-self-center gap-1 mt-10">
         {[...Array(chance)].map((_, i) => {
           return (
             <Row
