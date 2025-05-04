@@ -5,7 +5,6 @@ import checkAnswer from "@/util/checkAnswer";
 export default function useKeyboardHandler(setShakeRow:(val:boolean)=>void) {
     const chance = useStore((state) => state.chance);
     const allGuesses = useStore((state) => state.allGuesses);
-    const answerLength = useStore((state) => state.answerLength);
     const answer = useStore((state) => state.answer);
     const wordList = useStore((state) => state.wordList);;
     const setGameStatus = useStore((state) => state.setStatus);
@@ -15,7 +14,7 @@ export default function useKeyboardHandler(setShakeRow:(val:boolean)=>void) {
     const addGuess = useStore((state) => state.addGuess);
     const updateKeyRecord = useStore((state) => state.updateKeyRecord);
     const currentIndex = allGuesses?.length - 1;
-
+    const answerLength = answer.length
     const keyDownHandler = useCallback(
         (key: string) => {
         const currentGuess = allGuesses[currentIndex];
@@ -31,7 +30,7 @@ export default function useKeyboardHandler(setShakeRow:(val:boolean)=>void) {
             addLetter(currentIndex, key.toLowerCase());
         } else if (key === "Enter" && currentGuess.length === 5) {
             // Create a new guess and save the current guess as previous guess
-            if (!wordList.includes(currentGuess)) {
+            if (wordList.length !== 0 && !wordList.includes(currentGuess)) {
             // Check whether the guess is a valid word
                 toast.warning(`${currentGuess.toUpperCase()} is not in word list`);
                 setShakeRow(true);

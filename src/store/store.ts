@@ -9,7 +9,6 @@ export type keyRecordType = {
 type StoreType = {
     answer: string,
     status:string,
-    answerLength: number,
     chance:number,
     allGuesses: string[],
     results: string[][],
@@ -29,7 +28,6 @@ type StoreType = {
 const useStore = create<StoreType>((set) => ({
     answer: 'dread',
     status:'',
-    answerLength: 5,
     chance:6,
     allGuesses: [""],
     wordList:[],

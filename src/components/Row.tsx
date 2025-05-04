@@ -9,7 +9,8 @@ type RowProps = {
 };
 
 function Row({ guess, showResult, result, shake }: RowProps) {
-  const letter = useStore((state) => state.answerLength);
+  const answer = useStore((state) => state.answer);
+  const letter = answer.length;
   const classContent = `flex gap-1 ${shake ? "animate-shake" : ""}`;
   return (
     <div className={classContent}>
